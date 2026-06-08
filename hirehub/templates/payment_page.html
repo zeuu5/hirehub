@@ -1,0 +1,80 @@
+{% extends 'blank_layout.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: block;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+          
+        }
+
+        .payment-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+           
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .btn-pay {
+            width: 100%;
+            padding: 12px;
+            background: #ff523b;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-pay:hover {
+            background: #e14a3b;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h2>Secure Payment</h2>
+        <form action="{% url 'payment_success' %}" method="POST">
+            {% csrf_token %}
+            <script src="https://checkout.razorpay.com/v1/checkout.js"
+                data-key="{{ razorpay_key_id }}" 
+                data-amount="{{ total|floatformat:0 }}"  
+                data-currency="INR"
+                data-order_id="{{ razorpay_order_id }}" 
+                data-buttontext="Pay with Razorpay"
+                data-name="Hirehub"
+                data-description="Payment for service"
+                data-theme.color="#F37254">
+            </script>
+            <input type="hidden" name="order_id" value="{{ razorpay_order_id }}">
+        </form>
+    </div>
+</body>
+</html>
+{% endblock content %}

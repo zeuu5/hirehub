@@ -1,0 +1,56 @@
+{% load static %}
+{% load gettotal %}
+
+<div class="small-container cart-page">
+    {% if cart_items %}  {# Fixed the condition here #}
+    <table>
+        <tr>
+            <th>Service</th>
+            <th>Time</th>
+            <th>Subtotal</th>
+        </tr>
+        {% for cart_item in cart_items %}
+        <tr>
+            <td>
+                <div class="cart-info">
+                    {% if cart_item.service.image %}
+                        <img src="{{ cart_item.service.image.url }}" alt="Service Image">
+                    {% else %}
+                        <img src="{% static 'images/default-service.png' %}" alt="Default Service Image">
+                    {% endif %}
+                    <div>
+                        <p>{{ cart_item.service.title }}</p>
+                        <small>Price: ₹{{ cart_item.service.price }}</small>
+                        <br>
+                        <a href="{% url 'remove_item' cart_item.id %}">Remove</a>
+                    </div>
+                </div>
+            </td>
+            <td><input type="datetime-local" disabled value="{{ cart_item.service_time|date:'Y-m-d\\TH:i' }}"></td>
+            <td>₹{{ cart_item.service.price }}</td>
+        </tr>
+        {% endfor %}
+        
+    </table>
+
+    <div class="total-price">
+        <table>
+            <tr>
+                <td>Total</td>
+                <td>₹{% gettotal cart_items %}</td>
+            </tr>
+        </table>
+
+        <form action="{% url 'create_order' %}" method="POST">
+            {% csrf_token %}
+            {% for cart_item in cart_items %}
+                <input type="hidden" name="service_time_{{ cart_item.id }}" value="{{ cart_item.date|date:'Y-m-d\\TH:i' }}">
+            {% endfor %}
+            <button type="submit" class="btn">BOOK</button>
+        </form>
+
+    {% else %}
+    <p>Your Cart is Empty</p>
+    {% endif %}
+</div>
+</div>

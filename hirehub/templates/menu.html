@@ -1,0 +1,53 @@
+{% load static %}
+<div class="navbar">
+    <div class="logo">
+        <a href="index.html"><img src="{% static 'images/logo.png'%}" alt="logo" width="125px"></a>
+    </div>
+    <div>
+    </head>
+    <body>  
+    </div>
+
+    <form method="POST" action="{% url 'select_city' %}">
+        {% csrf_token %}
+        <select name="city" id="city" onchange="this.form.submit()">
+            <option value="" disabled {% if not request.session.selected_city %}selected{% endif %}>Select city</option>  
+            <option value="Bangaluru" {% if request.session.selected_city == "Bangaluru" %}selected{% endif %}>Bangaluru</option>
+            <option value="Kochi" {% if request.session.selected_city == "Kochi" %}selected{% endif %}>Kochi</option>
+            <option value="Mumbai" {% if request.session.selected_city == "Mumbai" %}selected{% endif %}>Mumbai</option>
+            <option value="Chennai" {% if request.session.selected_city == "Chennai" %}selected{% endif %}>Chennai</option>
+            <option value="Delhi" {% if request.session.selected_city == "Delhi" %}selected{% endif %}>Delhi</option>
+        </select>
+    </form>
+    
+    
+
+    
+    
+    <nav>
+        <ul id="MenuItems">
+            <li><a href="{% url 'Home' %}">Home</a></li>
+            <li><a href="{% url 'list_service' %}">Services</a></li>
+            {% if user.is_authenticated %}
+            {% endif %}
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'user_profile' %}">User</a></li>
+            {% endif %}
+            {% if not user.is_authenticated %}
+            <li><a href="{% url 'user_account' %}">Account</a></li>
+            {% else %}
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% endif %}
+            {% if user.is_staff %}
+                <li><a href="{% url 'admin:index' %}">Admin</a></li>
+            {% endif %}
+        </ul>
+
+    </nav>
+    {% if user.is_authenticated %}
+        <a href="{% url 'show_cart' %}"><img src="{% static 'images/cart.png'%}" width="30px" height="30px"></a>
+    {% endif %}
+        <span style="margin-right: 20px;"><img src="{% static 'images/menu.png'%}" class="menu-icon" onclick="menutoggle()"></span>
+        <!-- <span style="margin-right: 20px;"><a href=""><img src="{% static 'images/capture.png'%}" width="30px" height="30px"></a></span> -->
+    </div>
+      

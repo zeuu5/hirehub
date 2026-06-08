@@ -1,0 +1,75 @@
+<!-- templates/about_us.html -->
+{% extends 'blank_layout.html' %}
+
+{% block content %}
+<div class="about-us-container">
+    <h1>{{ about_us.title }}</h1>
+    <div class="about-us-content">
+        {{ about_us.content|safe }}  <!-- This will render any HTML tags in the content -->
+    </div>
+</div>
+
+<style>
+    /* Global Styles for About Us */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    .about-us-container {
+        width: 80%;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    .about-us-container h1 {
+        font-size: 28px;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .about-us-content {
+        font-size: 16px;
+        line-height: 1.8;
+        color: #555;
+    }
+
+    .about-us-content h2 {
+        font-size: 22px;
+        color: #2c3e50;
+        margin-top: 20px;
+    }
+
+    .about-us-content p {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    .about-us-content ul {
+        font-size: 16px;
+        margin-left: 20px;
+        color: #555;
+    }
+
+    .about-us-content ul li {
+        margin-bottom: 10px;
+    }
+
+    .about-us-content a {
+        color: #ff523b;
+        text-decoration: none;
+    }
+
+    .about-us-content a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

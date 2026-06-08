@@ -1,0 +1,147 @@
+{% load static %}
+<div class="small-container single-product">
+    <div class="row">
+        <div class="col-2">
+            <img src="{{ service.image.url }}" width="100%" id="ProductImg">
+        </div>
+
+        <div class="col-2">
+            <p>{{ service.title }}</p>
+            <h2>{{ service.customer }}</h2>
+            <p>Price: {{ service.price }}</p>
+            <p id="average-rating">Rating: {{ service.average_rating|floatformat:1 }} ⭐</p>
+
+            <!-- Add to Cart Form -->
+            <form method="post" action="{% url 'add_to_cart' service.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" value="{{ service.id }}" name="service_id">
+                <label for="datetime">Select date and time:</label>
+                <input type="datetime-local" name="selected_datetime" required>
+                <button type="submit" class="btn">Add To Cart</button>
+            </form>
+
+            <h3>Service Details <i class="fa fa-indent"></i></h3>
+            <p>{{ service.description }}</p>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div>
+        <h3>Customer Reviews</h3>
+        <div id="review-list">
+            {% for review in service.reviews.all %}
+                <div class="review">
+                    <p><strong>{{ review.user.username }}</strong> - ⭐ {{ review.rating }}/5</p>
+                    <p>{{ review.comment }}</p>
+                </div>
+            {% empty %}
+                <p id="no-reviews-message">No reviews yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Add Review Form -->
+    {% if user.is_authenticated %}
+        <div class="add-review-box" style="margin-top: 20px;">
+            <h3>Add a Review</h3>
+            <form id="review-form" method="POST" data-url="{% url 'add_review' service.id %}">
+                {% csrf_token %}
+
+                <!-- Star Rating Selection -->
+                <div class="star-rating">
+                    <input type="radio" name="rating" value="5" id="5-stars"><label for="5-stars">⭐</label>
+                    <input type="radio" name="rating" value="4" id="4-stars"><label for="4-stars">⭐</label>
+                    <input type="radio" name="rating" value="3" id="3-stars"><label for="3-stars">⭐</label>
+                    <input type="radio" name="rating" value="2" id="2-stars"><label for="2-stars">⭐</label>
+                    <input type="radio" name="rating" value="1" id="1-star"><label for="1-star">⭐</label>
+                </div>
+
+                {{ form.comment }}
+                
+                <!-- Submit Review Button (Now Below the Form) -->
+                <button type="submit" class="btn btn-success">Submit Review</button>
+            </form>
+        </div>
+    {% else %}
+        <p><a href="{% url 'user_account' %}">Log in to leave a review.</a></p>
+    {% endif %}
+</div>
+
+<!-- JavaScript for AJAX Submission -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const reviewForm = document.getElementById("review-form");
+
+        if (reviewForm) {
+            reviewForm.addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent default form submission
+                
+                const formData = new FormData(reviewForm);
+                const url = reviewForm.getAttribute("data-url");
+
+                fetch(url, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const reviewList = document.getElementById("review-list");
+
+                        // Remove "No reviews yet" message if it exists
+                        const noReviewMessage = document.getElementById("no-reviews-message");
+                        if (noReviewMessage) {
+                            noReviewMessage.remove();
+                        }
+
+                        // Append new review to the review list
+                        const newReview = document.createElement("div");
+                        newReview.classList.add("review");
+                        newReview.innerHTML = `
+                            <p><strong>${data.username}</strong> - ⭐ ${data.rating}/5</p>
+                            <p>${data.comment}</p>
+                        `;
+                        reviewList.prepend(newReview);
+
+                        // Update the average rating dynamically
+                        const avgRatingElement = document.getElementById("average-rating");
+                        if (avgRatingElement) {
+                            avgRatingElement.innerHTML = `Rating: ${data.new_average_rating.toFixed(1)} ⭐`;
+                        }
+
+                        // Clear the form
+                        reviewForm.reset();
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            });
+        }
+    });
+</script>
+
+<!-- Optional CSS Fix -->
+<style>
+    .review {
+        margin-bottom: 10px; /* Add space between reviews */
+        padding: 5px 0;
+    }
+
+    .add-review-box {
+        max-width: 500px;
+        margin: auto;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 10px;
+    }
+
+    .btn-success {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+    }
+</style>

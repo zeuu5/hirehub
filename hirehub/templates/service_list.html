@@ -1,0 +1,51 @@
+{% load static %}
+{% load chunks %}
+<div class="small-container">
+    <div class="row row-2">
+        <h2>All Services</h2>
+    </div>
+    <form method="GET" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px; max-width: 500px; margin: auto;">
+        <input type="text" name="query" placeholder="Search by title or description" value="{{ request.GET.query }}" 
+            style="flex: 1; padding: 12px; border: 2px solid #000000; border-radius: 8px; outline: none; font-size: 16px;">
+        <button type="submit" 
+            style="background-color: #000000; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">
+             Search
+        </button>
+    </form>
+    
+
+    <form method="GET">
+        <select name="sort" id="sort" onchange="this.form.submit()">
+            <option value="newest" {% if sort_by == "newest" %}selected{% endif %}>Newest</option>
+            <option value="oldest" {% if sort_by == "oldest" %}selected{% endif %}>Oldest</option>
+            <option value="price_low" {% if sort_by == "price_low" %}selected{% endif %}>Price: Low to High</option>
+            <option value="price_high" {% if sort_by == "price_high" %}selected{% endif %}>Price: High to Low</option>
+            <option value="priority" {% if sort_by == "priority" %}selected{% endif %}>Priority</option>
+        </select>
+    </form>
+
+    {% for service_chunks in services|chunks:4 %}
+    <div class="row">
+        {% for service in service_chunks %}
+        <div class="col-4">
+            <a href="{% url 'detail_service' service.id %}"><img src="{{ service.image.url }}"></a>
+            <h4>{{ service.title }}</h4>
+            <p>⭐ {{ service.average_rating|floatformat:1 }}</p>
+            <p>{{ service.price }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div class="page-btn">
+        {% if services.has_previous %}
+        <a href="?page={{ services.previous_page_number }}"><span><<</span></a>
+        {% endif %}
+        {% for i in services.paginator.page_range %}
+        <a href="?page={{ i }}"><span>{{ i }}</span></a>
+        {% endfor %}
+        {% if services.has_next %}
+        <a href="?page={{ services.next_page_number }}"><span>>></span></a>
+        {% endif %}
+    </div>
+</div>
